@@ -1,0 +1,240 @@
+
+============PictureGalleryCard.cmp==============
+
+<aura:component implements="flexipage:availableForAllPageTypes"
+                access="global">
+
+    <aura:attribute name="fullScreen" type="Boolean" default="false"/>
+    <aura:attribute name="animations" type="Boolean" default="true"/>
+    <aura:attribute name="slides" type="Object[]"/>
+
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <lightning:card iconName="utility:image" title="Picture Gallery">
+        <aura:set attribute="actions">
+            <lightning:buttonIcon onclick="{!c.fullScreen}" size="large" iconName="utility:expand" />
+        </aura:set>
+        <c:PictureCarousel slides="{!v.slides}"/>
+        <aura:if isTrue="{!v.fullScreen==true}">
+            <div role="dialog" tabindex="-1" aria-labelledby="header43" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <c:PictureCarousel slides="{!v.slides}"/>
+                </div>
+                
+                <div class="btn slds-modal__close close x-large">
+                    <lightning:buttonIcon variant="border-filled" onclick="{!c.closeDialog}" size="large" iconName="utility:close" />
+                </div>
+                
+            </div>
+            <div class="slds-backdrop slds-backdrop--open"></div>
+        </aura:if>
+    </lightning:card>
+
+</aura:component>
+
+=============================js controller====================
+
+({
+    doInit : function(component) {
+    	// Hardcoding images in this demo component
+    	component.set("v.slides", [
+            'https://drec--drecpoc--c.visualforce.com/resource/1588142494000/DREC_livingRoom?',  /* Static resource image path */
+            'https://drec--drecpoc--c.visualforce.com/resource/1588142530000/DREC_kitchen',
+			'https://drec--drecpoc--c.visualforce.com/resource/1588142584000/DREC_EatingKitchen?'
+        ]);
+    },
+
+	fullScreen : function(component) {
+        component.set("v.fullScreen", true);
+	},
+
+	closeDialog : function(component) {
+        component.set("v.fullScreen", false);
+	}
+
+})
+
+==========================CSS style================================
+
+.THIS * {
+	box-sizing: border-box; 
+}
+
+.THIS .slds-card__body {
+	height: 340px;
+    margin-bottom: 0;
+}
+
+.THIS .slds-modal__container {
+    margin-top: 100px;
+    height: 90%;
+    width: 90%;
+    max-width: initial;
+}
+
+.THIS .slds-modal__close {
+    position: absolute;
+    top: 100px;
+    right: 5%;
+}
+
+===========================helper===================
+
+({
+	helperMethod : function() {
+		
+	}
+})
+
+=========================DESIGN ===========================
+
+
+<design:component label="Picture Gallery">
+	<design:attribute name="animations" label="Animations" description="Animated transitions" />
+</design:component>
+
+============================SVG ================
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="96px" height="97px" viewBox="0 0 96 97" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 39.1 (31720) - http://www.bohemiancoding.com/sketch -->
+    <title>image</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="image" fill="#54698D">
+            <g id="Layer_1_copy_2">
+                <path d="M95.5238095,10.126294 C95.5238095,4.95031056 91.6628057,0.80952381 87.3728014,0.80952381 L8.43672244,0.80952381 C4.14671815,0.80952381 0.285714286,4.95031056 0.285714286,10.126294 L0.285714286,86.7308489 C0.285714286,91.9068323 4.14671815,96.047619 8.43672244,96.047619 L87.3728014,96.047619 C91.6628057,96.047619 95.5238095,91.9068323 95.5238095,86.7308489 L95.5238095,10.126294 L95.5238095,10.126294 Z M78.3809524,75.5714286 L14.5714286,75.5714286 C11.7142857,75.5714286 10.2857143,72.7142857 11.7142857,70.8095238 L31.2380952,37 C31.7142857,35.5714286 34.0952381,35.5714286 34.5714286,37 L46.4761905,57 C47.4285714,58.4285714 49.3333333,58.4285714 50.2857143,57.4761905 L59.8095238,43.6666667 C60.2857143,42.2380952 62.6666667,42.2380952 63.1428571,43.6666667 L80.7619048,71.2857143 C82.1904762,73.1904762 80.7619048,75.5714286 78.3809524,75.5714286 L78.3809524,75.5714286 Z M72.6666667,36.047619 C67.9047619,36.047619 63.6190476,32.2380952 63.6190476,27.4761905 C63.6190476,22.7142857 67.9047619,18.4285714 72.6666667,18.4285714 C77.4285714,18.4285714 81.2380952,22.7142857 81.2380952,27.4761905 C81.2380952,32.2380952 77.4285714,36.047619 72.6666667,36.047619 L72.6666667,36.047619 Z" id="Shape"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+
+==========================PictureCarousel.cmp============================
+
+<aura:component access="global">
+
+    <aura:attribute name="slideIndex" type="Integer" default="0"/>
+    <aura:attribute name="slideWidth" type="Integer" default="0"/>
+    <aura:attribute name="slides" type="Object[]"/>
+
+    <div aura:id="gallery" class="gallery">
+        <div class="filmstrip" style="{! 'margin-left: -' + (v.slideIndex * v.slideWidth) + 'px'}">
+            <aura:iteration items="{!v.slides}" var="slide" indexVar="index">
+                <div class="slide" style="{!'width:' + v.slideWidth + 'px;background-image:url(' + slide + ')'}"></div>
+            </aura:iteration>            
+        </div>
+        <div class="{! v.slideWidth>640 ? 'btn prev x-large' : 'btn prev'}">
+			<lightning:buttonIcon variant="border-filled" onclick="{!c.prev}" size="large" iconName="utility:chevronleft" />
+        </div>
+        <div class="{! v.slideWidth>640 ? 'btn next x-large' : 'btn next'}">
+			<lightning:buttonIcon variant="border-filled" onclick="{!c.next}" size="large" iconName="utility:chevronright" />
+        </div>
+    </div>
+        
+</aura:component>
+
+=============================js controller========================
+
+({
+    next: function(component) {
+    	var slideIndex = component.get("v.slideIndex");
+    	var slides = component.get("v.slides");
+        if (slideIndex + 1 < slides.length) {
+            slideIndex = slideIndex + 1;
+	        component.set("v.slideIndex", slideIndex);
+        }
+	},
+
+    prev: function(component) {
+       	var slideIndex = component.get("v.slideIndex");
+        if (slideIndex > 0) {
+            slideIndex = slideIndex - 1;
+	        component.set("v.slideIndex", slideIndex);
+        }
+    }
+
+})
+
+======================helper=========================================
+
+({
+    setSlideWidth: function (component) {
+        var slideWidth = component.find("gallery").getElement().offsetWidth;
+        component.set("v.slideWidth", slideWidth);
+    }
+})
+
+
+===================style css===============================
+
+.THIS {
+    position: relative;
+    width: 100%;
+    height: 100%;
+	overflow: hidden;
+}
+
+.THIS * {
+	box-sizing: border-box;
+}
+
+.THIS .filmstrip {
+	-webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    transition: all .5s ease-in-out;
+    height: 100%;
+	display: inline-block;
+	white-space: nowrap;
+}
+
+.THIS .slide {
+    height: 100%;
+	display: inline-block;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.THIS .btn {
+    position: absolute;
+}
+
+.THIS .btn.next {
+    top: 44%;
+    right: 6px;
+}
+
+.THIS .btn.prev {
+    top: 44%;
+    left: 6px;
+}
+
+.THIS .btn.fullscreen,
+.THIS .btn.close
+{
+    bottom: 0;
+    left: 0;
+}
+
+.THIS .btn.x-large .slds-button {
+    width: 3.5rem;
+    height: 3.5rem;
+}
+.THIS .btn.x-large .slds-button__icon {
+    width: 1.7rem;
+    height: 1.7rem;
+}
+
+===============================Renderer=====================
+
+({
+    afterRender: function (component, helper) {
+        this.superAfterRender();
+		helper.setSlideWidth(component, helper);
+    }
+})
+
+========================
+
+
